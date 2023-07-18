@@ -48,7 +48,7 @@ def lerp(start_color, end_color, t):
 
 def UpdateLeds(t):
     ledFraction = 1/numLeds
-    fullLeds = math.floor(t/numLeds)
+    fullLeds = math.floor(t/ledFraction)
     fadeamount = ((t%ledFraction)*24)
     for i in range(0, numLeds):
         if (i <= fullLeds):
