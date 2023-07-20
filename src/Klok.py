@@ -6,8 +6,9 @@ import math
 
 numLeds = 24
 np = neopixel.NeoPixel(pin0, numLeds)
-Truecolor = (255, 0, 0)
-Falsecolor = (0, 0, 255)
+
+Truecolor = (0,137,133)
+Falsecolor = (239,121,17)
 
 def TimeToMs(uur, minuten, seconden):
     sec = 0
@@ -46,23 +47,35 @@ def lerp(start_color, end_color, t):
     # Return the interpolated RGB color as a tuple
     return (interpolated_r, interpolated_g, interpolated_b)
 
-def UpdateLeds(t):
-    ledFraction = 1/numLeds
-    fullLeds = math.floor(t/ledFraction)
-    fadeamount = ((t%ledFraction)*24)
-    for i in range(0, numLeds):
-        if (i <= fullLeds):
-            np[i] = Truecolor
-        elif (i == fullLeds+1):
-            np[i] = lerp(Falsecolor, Truecolor, fadeamount)
-            print(lerp(Falsecolor, Truecolor, fadeamount))
-        else:
-            np[i] = Falsecolor
-    
-    np.show()
 
+
+class Clock:
+    def __init__(self, _brightness):
+        self.brightness = _brightness
+    
+    def ShowProgressBar(self, t, Truecolor, Falsecolor):
+        ledFraction = 1/numLeds
+        fullLeds = math.floor(t/ledFraction)
+        fadeamount = ((t%ledFraction)*24)
+        for i in range(0, numLeds):
+            if (i <= 24-fullLeds):
+                np[i-23] = tuple([round(self.brightness*x) for x in Truecolor])
+            elif (i == 24-fullLeds+1):
+                np[i-23] = tuple([round(self.brightness*x) for x in lerp(Truecolor, Falsecolor, fadeamount)])
+                print(lerp(Falsecolor, Truecolor, fadeamount))
+            else:
+                np[i-23] = tuple([round(self.brightness*x) for x in Falsecolor])
+
+        np.show()
+
+    def ShowRGBfade(self, t):
+        color = (1,1,1)
+        for i in range(0, numLeds):
+            np[i] = color
+
+
+cl = Clock(0.05)
 # Code in a 'while True:' loop repeats forever
 while True:
     currTime = time.ticks_ms()
-    #print(TimeFraction(currTime))
-    UpdateLeds(TimeFraction(currTime))
+    cl.ShowProgressBar(TimeFraction(currTime), Truecolor, Falsecolor)
