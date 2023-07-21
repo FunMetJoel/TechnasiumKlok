@@ -1,4 +1,5 @@
-# Imports go at the top
+# Your new file!
+
 from microbit import *
 import neopixel
 import time
@@ -60,7 +61,7 @@ class colors:
 
         colorResult = colors.lerp(lerpColors[currentColorIndex-1], lerpColors[currentColorIndex], fadeamount)
         return colorResult
-        
+     
 
 class Clock:
     def __init__(self, _numLeds, _brightness):
@@ -89,12 +90,10 @@ class Clock:
         for i in range(0, self.numLeds):
             self.setLed(i, brightness=0)
 
-        cl.setLed(currLed-3, brightness=0.25)
-        cl.setLed(currLed-2, brightness=0.50)
-        cl.setLed(currLed-1, brightness=0.75)
-        cl.setLed(currLed, brightness=1)
-        cl.np.show()
-
+        self.setLed(currLed-3, brightness=0.25)
+        self.setLed(currLed-2, brightness=0.50)
+        self.setLed(currLed-1, brightness=0.75)
+        self.setLed(currLed, brightness=1)
         self.np.show()
 
     def ShowColorfade(self, t, fadecolors):
@@ -111,14 +110,4 @@ class Clock:
     def setLed(self, ledNum, color=(255,255,255), brightness=1.0):
         ledNum = self.numLeds - (ledNum%self.numLeds) - 23
         self.np[ledNum] = tuple([round(self.brightness*brightness*x) for x in color])
-    
-cl = Clock(24, 0.05)
-# Code in a 'while True:' loop repeats forever
-while True:
-    currTime = time.ticks_ms()
-    cl.ShowProgressBar(TimeFraction(currTime), Truecolor, Falsecolor)
-    #cl.ShowRadarfade(TimeFraction(currTime), Truecolor, Falsecolor)
-    #cl.ShowColorfade(TimeFraction(currTime), [(255,0,0),(0,255,0),(0,0,255)])
-    #cl.ShowStaticColorfade([(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255)])
-
-        
+   
