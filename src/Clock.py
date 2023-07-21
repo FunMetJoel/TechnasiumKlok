@@ -4,27 +4,33 @@ from microbit import *
 import neopixel
 import math
 import Colors
+import random
 
 Truecolor = (0,137,133)
 Falsecolor = (239,121,17)
 
- 
-
 class Clock:
     def __init__(self, _numLeds, _brightness):
-        self.numLeds = 24
+        self.numLeds = _numLeds
         self.brightness = _brightness
         self.np = neopixel.NeoPixel(pin0, self.numLeds)
         self.ledFraction = 1/self.numLeds
+
+    def RandomLeds(self):
+        self.setLed(random.randint(0, self.numLeds),color=(255, 255, 255) ,brightness=1)
+        for i in range(0, self.numLeds):
+            print(self.np[i])
+            self.setLed(i, self.np[i], 0.75)
+        self.np.show()
     
     def ShowProgressBar(self, t, Truecolor, Falsecolor):
         fullLeds = math.floor(t/self.ledFraction)
         fadeamount = ((t%self.ledFraction)*24)
         
         for i in range(0, self.numLeds):
-            if (i <= fullLeds):
+            if (i < fullLeds):
                 self.setLed(i,Truecolor)
-            elif (i == fullLeds+1):
+            elif (i == fullLeds):
                 self.setLed(i,Colors.lerp(Falsecolor, Truecolor, fadeamount))
             else:
                 self.setLed(i,Falsecolor)
