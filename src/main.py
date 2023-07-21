@@ -1,6 +1,6 @@
 # Imports go at the top
 from microbit import *
-import time
+from Tijd import *
 from Clock import *
 
 cl = Clock(24, 0.05)
