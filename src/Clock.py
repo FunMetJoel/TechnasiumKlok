@@ -2,66 +2,13 @@
 
 from microbit import *
 import neopixel
-import time
 import math
+import Colors
 
 Truecolor = (0,137,133)
 Falsecolor = (239,121,17)
 
-def TimeToMs(uur, minuten, seconden):
-    sec = 0
-    sec += uur * 3600
-    sec += minuten * 60
-    sec += seconden
-    ms = sec * 1000
-    return ms
-
-tijden = [
-    TimeToMs(0, 0, 0),
-    TimeToMs(0, 1, 0),
-    TimeToMs(0, 2, 0),
-    TimeToMs(8, 10, 0),
-    TimeToMs(8, 55, 0),
-    TimeToMs(9, 40, 0)
-]
-
-def TimeFraction(t):
-    for i in range(0, len(tijden)):
-        if time.ticks_diff(t, tijden[i]) < 0:
-            timeSinceBel = time.ticks_diff(tijden[i-1], t)
-            lenghtOfLesson = time.ticks_diff(tijden[i-1], tijden[i])
-            return float(timeSinceBel/lenghtOfLesson)
-    return float(0)
-
-class colors:
-    def __init__(self, _themecolors):
-        self.themecolors = _themecolors
-
-    @staticmethod
-    def lerp(start_color, end_color, t):    
-        # Extract the individual color channels (R, G, B) from start_color and end_color
-        start_r, start_g, start_b = start_color
-        end_r, end_g, end_b = end_color
-    
-        # Calculate the interpolated color channels
-        interpolated_r = int(start_r + (end_r - start_r) * t)
-        interpolated_g = int(start_g + (end_g - start_g) * t)
-        interpolated_b = int(start_b + (end_b - start_b) * t)
-    
-        # Return the interpolated RGB color as a tuple
-        return (interpolated_r, interpolated_g, interpolated_b)
-        
-    @staticmethod
-    def PoligonLerp(lerpColors, t):
-        colorCount = len(lerpColors)
-        sideLength = 1/colorCount
-
-        currentColorIndex = math.floor(t/sideLength)
-        fadeamount = ((t%sideLength)*colorCount)
-
-        colorResult = colors.lerp(lerpColors[currentColorIndex-1], lerpColors[currentColorIndex], fadeamount)
-        return colorResult
-     
+ 
 
 class Clock:
     def __init__(self, _numLeds, _brightness):
@@ -78,7 +25,7 @@ class Clock:
             if (i <= fullLeds):
                 self.setLed(i,Truecolor)
             elif (i == fullLeds+1):
-                self.setLed(i,colors.lerp(Falsecolor, Truecolor, fadeamount))
+                self.setLed(i,Colors.lerp(Falsecolor, Truecolor, fadeamount))
             else:
                 self.setLed(i,Falsecolor)
 
@@ -98,13 +45,13 @@ class Clock:
 
     def ShowColorfade(self, t, fadecolors):
         for i in range(0, self.numLeds):
-            self.setLed(i, colors.PoligonLerp(fadecolors, t) )
+            self.setLed(i, Colors.PoligonLerp(fadecolors, t) )
         
         self.np.show()
 
     def ShowStaticColorfade(self, fadecolors):
         for i in range(0, self.numLeds):
-            self.setLed(i, colors.PoligonLerp(fadecolors, i/(self.numLeds+1)))
+            self.setLed(i, Colors.PoligonLerp(fadecolors, i/(self.numLeds+1)))
         self.np.show()
 
     def setLed(self, ledNum, color=(255,255,255), brightness=1.0):
