@@ -39,7 +39,7 @@ while True:
         sleep(500)
 
     if (setting >= 0 and setting <= 5):
-        print(settingName(setting))
+        #print(settingName(setting))
         if button_b.is_pressed():
             colorsToSend[setting] += 1
             if (colorsToSend[setting] > 255):
@@ -56,7 +56,9 @@ while True:
             print("Press A to start an interaction. Press B for help")
         if button_a.is_pressed():
             Input = input()
-            radio.send(Input)
+            for i in range(0,5):
+                radio.send(Input)
+                sleep(100)
         if button_b.is_pressed():
             print("Possible commands:")
             print("  Clr:RRR,GGG,BBB,rrr,ggg,bbb")
