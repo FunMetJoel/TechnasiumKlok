@@ -31,6 +31,8 @@ while True:
             print(message[24:27])
             colorScheme[0] = (int(message[4:7]),int(message[8:11]),int(message[12:15]))
             colorScheme[1] = (int(message[16:19]),int(message[20:23]),int(message[24:27]))
+        elif(message[0:3] == "Mde"):
+            subState = int(message.split(":")[1])
 
     
     if (state == 0):
