@@ -8,6 +8,8 @@ import radio
 cl = Clock(24, 0.05)
 lt = 0.0
 
+LoopT = 60000
+
 colorScheme = [(0,137,133),(239,121,17)]
 
 state = 0 #0: lost Energy, 1: calibrated, 2: settings
@@ -33,6 +35,8 @@ while True:
             colorScheme[1] = (int(message[16:19]),int(message[20:23]),int(message[24:27]))
         elif(message[0:3] == "Mde"):
             subState = int(message.split(":")[1])
+        elif(message[0:3] == "Tim"):
+            LoopT = int(message.split(":")[1])
 
     
     if (state == 0):
@@ -40,19 +44,19 @@ while True:
         state = 1
     elif(state == 1):
         if(subState == 0):
-            cl.ShowProgressBar(LoopTimeFraction(3000), colorScheme[0], colorScheme[1])
+            cl.ShowProgressBar(LoopTimeFraction(LoopT), colorScheme[0], colorScheme[1])
         elif(subState == 1):
-            cl.ShowRadarfade(LoopTimeFraction(3000), colorScheme[0], colorScheme[1])
+            cl.ShowRadarfade(LoopTimeFraction(LoopT), colorScheme[0], colorScheme[1])
         elif(subState == 2):
-            cl.ShowColorfade(LoopTimeFraction(3000), [(255,0,0),(0,255,0),(0,0,255)])
+            cl.ShowColorfade(LoopTimeFraction(LoopT), [(255,0,0),(0,255,0),(0,0,255)])
         elif(subState == 3):
             cl.ShowStaticColorfade([(255,0,0),(0,255,0),(0,0,255),(255,0,0),(0,255,0),(0,0,255)])
         elif(subState == 4):
             cl.ShowStaticColorfade([(0,255,0)])
         elif(subState == 5):
-            cl.RandomLeds(LoopTimeFraction(250), 0.99)
+            cl.RandomLeds(LoopTimeFraction(LoopT), 0.99)
         else:
-            cl.ShowColorfade(LoopTimeFraction(3000), [(255,0,0),(0,0,0)])
+            cl.ShowColorfade(LoopTimeFraction(LoopT), [(255,0,0),(0,0,0)])
     elif(state == 2):
         if(subState == 0):
             cl.ShowColorfade(LoopTimeFraction(3000), [colorScheme[0],colorScheme[0],colorScheme[0],colorScheme[0],colorScheme[0],colorScheme[0],(0,0,0),colorScheme[1],colorScheme[1],colorScheme[1],colorScheme[1],colorScheme[1],colorScheme[1],(0,0,0)])
@@ -60,7 +64,3 @@ while True:
             pass
         else:
             cl.ShowColorfade(LoopTimeFraction(3000), [(255,0,0),(0,0,0)])
-
-            
-
-        
