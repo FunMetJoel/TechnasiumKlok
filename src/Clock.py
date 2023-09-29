@@ -42,10 +42,10 @@ class Clock:
         for i in range(0, self.numLeds):
             self.setLed(i, brightness=0)
 
-        self.setLed(currLed-3, brightness=0.25)
-        self.setLed(currLed-2, brightness=0.50)
-        self.setLed(currLed-1, brightness=0.75)
-        self.setLed(currLed, brightness=1)
+        self.setLed(currLed-3, color=Falsecolor, brightness=0.25)
+        self.setLed(currLed-2, color=Falsecolor, brightness=0.50)
+        self.setLed(currLed-1, color=Falsecolor, brightness=0.75)
+        self.setLed(currLed, color=Truecolor ,brightness=1)
         self.show()
 
     def ShowColorfade(self, t, fadecolors):
