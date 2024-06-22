@@ -74,5 +74,9 @@ class Color:
             math.floor(color1.b + (color2.b - color1.b) * t)
         )
     
-    @classmethod
-    def 
+    def setBrightness(self, brightness:float):
+        return Color(
+            math.floor(self.r * brightness),
+            math.floor(self.g * brightness),
+            math.floor(self.b * brightness)
+        )
