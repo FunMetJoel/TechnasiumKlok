@@ -37,9 +37,3 @@ class Clock:
 
     def shift(self, amount:int):
         self.pixels = [Color(0, 0, 0)] * amount + self.pixels[:-amount]
-
-        
-
-    
-
-
