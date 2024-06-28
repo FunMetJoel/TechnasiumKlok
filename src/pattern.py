@@ -39,9 +39,9 @@ class Solid(Pattern):
     def __init__(self, num_leds:int):
         super().__init__(num_leds)
         self.params = {
-            'colorR': 0,
-            'colorG': 0,
-            'colorB': 0
+            'colorR': 255,
+            'colorG': 255,
+            'colorB': 255
         }
 
     def getDescription(self) -> str:
@@ -101,7 +101,6 @@ class Snake(Pattern):
         currentFrontLed = int(math.floor(((t * speed) % 1)*self.num_leds))
         for i in range(self.num_leds):
             if currentFrontLed == i:
-                print(i)
                 colors.append(color1)
             elif ( (currentFrontLed - i) % self.num_leds < length ):
                 colors.append(color2)

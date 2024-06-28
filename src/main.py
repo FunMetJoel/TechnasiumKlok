@@ -39,8 +39,11 @@ radio.config(group=177)
 radio.on()
 
 def setPattern(pattern:str):
+    global currentPattern
+    if not pattern:
+        return False
     if pattern in patterns:
-        currentPattern = (patterns[pattern](NUM_LEDS))
+        currentPattern = patterns[pattern](NUM_LEDS)
         return True
     else:
         return False
@@ -65,7 +68,9 @@ def error():
     music.play(music.POWER_DOWN)
 
 def handleCommand(command:str):
+    global state
     baseCommand = command.split(' ')[0]
+    print("Basecommand:" + baseCommand)
     if baseCommand == 'pause':
         state = 2
     elif baseCommand == 'resume':
@@ -73,12 +78,18 @@ def handleCommand(command:str):
     elif baseCommand == 'stop':
         state = 3
     elif baseCommand == 'setPattern':
-        result = setPattern(command.split(' ')[1])
+        newPattern = command.split(' ')[1]
+        result = setPattern(newPattern)
         if not result:
             radio.send('error: invalid pattern')
+            
+    elif baseCommand == 'getPatterns':
+        for pat in patterns:
+            radio.send(pat)
     elif baseCommand == 'getParams':
         if currentPattern:
-            radio.send(str(currentPattern.params))
+            for param, value in currentPattern.params.items():
+                radio.send(str(param) + ": " + str(value))
         else:
             radio.send('error: no pattern set')
     elif baseCommand == 'setParam':
@@ -94,7 +105,8 @@ def handleCommand(command:str):
     elif baseCommand == 'getPatterns':
         radio.send(str(list(patterns.keys())))
     else:
-        pass
+        radio.send('Command Not found')
+    radio.send('COMMANDEND')
 
 def parseValue(value:str):
     try:
@@ -108,6 +120,7 @@ def parseValue(value:str):
 def handleRadio():
     incoming = radio.receive()
     if incoming:
+        print(incoming)
         commandStack.append(incoming)
 
 while True:
