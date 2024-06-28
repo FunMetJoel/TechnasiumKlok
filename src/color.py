@@ -16,7 +16,7 @@ class Color:
         return cls(r, g, b)
     
     @classmethod
-    def from_hsv(cls, h:int, s:int, v:int):
+    def from_hsv(cls, h:float, s:float, v:float):
         h, s, v = h/360, s/100, v/100
         i = math.floor(h * 6)
         f = (h * 6) - i
@@ -25,20 +25,20 @@ class Color:
         t = v * (1 - (1 - f) * s)
         i %= 6
         if i == 0:
-            return cls(v, t, p)
+            return cls(int(v*255), int(t*255), int(p*255))
         if i == 1:
-            return cls(q, v, p)
+            return cls(int(q*255), int(v*255), int(p*255))
         if i == 2:
-            return cls(p, v, t)
+            return cls(int(p*255), int(v*255), int(t*255))
         if i == 3:
-            return cls(p, q, v)
+            return cls(int(p*255), int(q*255), int(v*255))
         if i == 4:
-            return cls(t, p, v)
+            return cls(int(t*255), int(p*255), int(v*255))
         if i == 5:
-            return cls(v, p, q)
+            return cls(int(v*255), int(q*255), int(q*255))
         
-    def to_hex(self):
-        return f'#{self.r:02x}{self.g:02x}{self.b:02x}'
+    # def to_hex(self):
+    #     return f'#{self.r:02x}{self.g:02x}{self.b:02x}'
     
     def to_rgb(self):
         return self.r, self.g, self.b
@@ -48,6 +48,7 @@ class Color:
         cmax = max(r, g, b)
         cmin = min(r, g, b)
         delta = cmax - cmin
+        h=0
         if delta == 0:
             h = 0
         elif cmax == r:
@@ -63,8 +64,8 @@ class Color:
         v = cmax
         return h, s * 100, v * 100
 
-    def __str__(self):
-        return f'Color({self.r}, {self.g}, {self.b})'
+    # def __str__(self):
+    #     return f'Color({self.r}, {self.g}, {self.b})'
     
     @classmethod
     def lerp(cls, color1, color2, t):

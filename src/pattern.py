@@ -1,8 +1,7 @@
-from abc import ABC, abstractmethod
 from color import Color
-from typing import Union
+import math
 
-class Pattern(ABC):
+class Pattern():
     def __init__(self, num_leds:int):
         self.num_leds = num_leds
         self.params = {}
@@ -13,12 +12,10 @@ class Pattern(ABC):
     def setParams(self, params):
         self.params.update(params)
 
-    @abstractmethod
     def getDescription(self) -> str:
         pass
 
-    @abstractmethod
-    def getColors(self, t:float) -> list[Color]:
+    def getColors(self, t:float):
         pass
 
 
@@ -30,7 +27,7 @@ class Rainbow(Pattern):
     def getDescription(self) -> str:
         return 'retruns a rotating rainbow pattern'
     
-    def getColors(self, t:float) -> list[Color]:
+    def getColors(self, t:float):
         speed = self.params['speed']
         colors = []
         for i in range(self.num_leds):
@@ -38,7 +35,6 @@ class Rainbow(Pattern):
             colors.append(Color.from_hsv(hue * 360, 100, 100))
         return colors
 
-    
 class Solid(Pattern):
     def __init__(self, num_leds:int):
         super().__init__(num_leds)
@@ -51,8 +47,9 @@ class Solid(Pattern):
     def getDescription(self) -> str:
         return 'returns a solid color pattern'
     
-    def getColors(self, t:float) -> list[Color]:
-        return [self.params['color'] for _ in range(self.num_leds)]
+    def getColors(self, t:float):
+        color = Color(self.params['colorR'], self.params['colorG'], self.params['colorB'])
+        return [color for _ in range(self.num_leds)]
 
 
 class Gradient(Pattern):
@@ -70,7 +67,7 @@ class Gradient(Pattern):
     def getDescription(self) -> str:
         return 'returns a gradient pattern'
     
-    def getColors(self, t:float) -> list[Color]:
+    def getColors(self, t:float):
         start_color = Color(self.params['startColorR'], self.params['startColorG'], self.params['startColorB'])
         end_color = Color(self.params['endColorR'], self.params['endColorG'], self.params['endColorB'])
         colors = []
@@ -78,15 +75,15 @@ class Gradient(Pattern):
             colors.append(Color.lerp(start_color, end_color, i/self.num_leds))
         return colors
     
-class Snake:
+class Snake(Pattern):
     def __init__(self, num_leds:int):
         super().__init__(num_leds)
         self.params = {
-            'color1R': 0,
+            'color1R': 255,
             'color1G': 0,
             'color1B': 0,
             'color2R': 0,
-            'color2G': 0,
+            'color2G': 255,
             'color2B': 0,
             'speed': 1,
             'length': 3
@@ -95,15 +92,22 @@ class Snake:
     def getDescription(self) -> str:
         return 'pattern with head and tail'
     
-    def getColors(self, t:float) -> list[Color]:
+    def getColors(self, t:float):
         speed = self.params['speed']
         length = self.params['length']
         color1 = Color(self.params['color1R'], self.params['color1G'], self.params['color1B'])
         color2 = Color(self.params['color2R'], self.params['color2G'], self.params['color2B'])
         colors = []
+        currentFrontLed = int(math.floor(((t * speed) % 1)*self.num_leds))
         for i in range(self.num_leds):
-            hue = (t * speed + i) % 1
-            colors.append(Color.from_hsv(hue * 360, 100, 100))
+            if currentFrontLed == i:
+                print(i)
+                colors.append(color1)
+            elif ( (currentFrontLed - i) % self.num_leds < length ):
+                colors.append(color2)
+            else:
+                colors.append(Color(0,0,0))
+            
         return colors
 
     

@@ -11,16 +11,29 @@ LED_PIN = mb.pin0
 patterns = {
     'rainbow': Rainbow,
     'solid': Solid,
-    'gradient': Gradient
+    'gradient': Gradient,
+    'snake': Snake
 }
-currentPattern = None
+currentPattern = patterns['snake'](NUM_LEDS)
+currentPattern.setParams(
+    {
+    'color1R': 255,
+    'color1G': 0,
+    'color1B': 0,
+    'color2R': 0,
+    'color2G': 255,
+    'color2B': 0,
+    'speed': 1,
+    'length': 3
+    }
+)
 
 commandStack = []
 
 # 0 = start, 1 = running, 2 = paused, 3 = error
 state = 0
 
-clock = Clock(NUM_LEDS, LED_PIN)
+nclock = Clock(NUM_LEDS, LED_PIN)
 
 radio.config(group=177)
 radio.on()
@@ -35,17 +48,20 @@ def setPattern(pattern:str):
 def mainUpdate():
     t = mb.running_time() / 1000
     colors = currentPattern.getColors(t)
-    clock.setAll(colors)
-    clock.show()
+    nclock.setAll(colors)
+    nclock.show()
 
 def startup():
-    clock.fill(Color(0, 0, 0))
-    clock.show()
+    global state
+    nclock.fill(Color(0, 0, 0))
+    nclock.show()
     music.play(music.POWER_UP)
+    state = 1
+    
 
 def error():
-    clock.fill(Color(255, 0, 0))
-    clock.show()
+    nclock.fill(Color(255, 0, 0))
+    nclock.show()
     music.play(music.POWER_DOWN)
 
 def handleCommand(command:str):
@@ -109,6 +125,7 @@ while True:
         try:
             mainUpdate()
         except Exception as e:
+            print(e)
             state = 3
     
     elif state == 2:
