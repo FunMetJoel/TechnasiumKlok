@@ -1,5 +1,6 @@
 from color import Color
 import math
+import timeManager
 
 class Pattern():
     def __init__(self, num_leds:int):
@@ -109,4 +110,34 @@ class Snake(Pattern):
             
         return colors
 
+class ShowTime(Pattern):
+    def __init__(self, num_leds:int):
+        super().__init__(num_leds)
+        self.params = {
+            'color1R': 255,
+            'color1G': 0,
+            'color1B': 0,
+            'color2R': 0,
+            'color2G': 255,
+            'color2B': 0
+        }
+
+    def getDescription(self) -> str:
+        return 'Shows hour and minute hands'
     
+    def getColors(self, t:float):
+        speed = self.params['speed']
+        length = self.params['length']
+        color1 = Color(self.params['color1R'], self.params['color1G'], self.params['color1B'])
+        color2 = Color(self.params['color2R'], self.params['color2G'], self.params['color2B'])
+        colors = []
+        currentHour = (timeManager.getDayTime(t) / (60*60*24)) % 24
+        current12Hour = currentHour % 12
+        for i in range(self.num_leds):
+            
+            if ((current12Hour ) % 12)* 2 == i:
+                colors.append(color1)
+            else:
+                colors.append(Color(0,0,0))
+            
+        return colors

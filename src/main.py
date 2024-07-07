@@ -12,9 +12,10 @@ patterns = {
     'rainbow': Rainbow,
     'solid': Solid,
     'gradient': Gradient,
-    'snake': Snake
+    'snake': Snake,
+    'showtime': ShowTime
 }
-currentPattern = patterns['snake'](NUM_LEDS)
+currentPattern = patterns['showtime'](NUM_LEDS)
 currentPattern.setParams(
     {
     'color1R': 255,
