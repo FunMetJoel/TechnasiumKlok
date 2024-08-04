@@ -2,6 +2,7 @@
 #include "clock.h"
 #include "webinterface.h"
 #include "patterns.h"
+#include "OTA.h"
 
 byte colors[24][3] = {
   {0,0,0},
@@ -42,6 +43,7 @@ Pattern* patterns[3] = {
 void setup() {
   clock_setup();
   webinterface_setup(patterns);
+  OTA_setup();
 }
 
 void loop() {
@@ -59,4 +61,6 @@ void loop() {
   }
 
   freePatternMemory(pattern, 24);
+
+  OTA_loop();
 }
