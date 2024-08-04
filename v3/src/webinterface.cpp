@@ -51,6 +51,57 @@ void webinterface_loop(byte *currentPatternId) {
   *currentPatternId = currentMode;
 }
 
+
+String SendHTML2(){
+  String ptr = R"html(
+  <!DOCTYPE html>
+  <html>
+  <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LED Control</title>
+  <style>
+  html {
+  font-family: Arial;
+  display: inline-block;
+  margin: 0px auto;
+  text-align: center;
+  }
+  h2 { margin-top: 0; }
+  p { margin-top: 0; }
+  body { margin: 0; }
+  .switch { 
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  .switch input { 
+    display: none;
+  }
+  </style>
+  </head>
+  <body>
+  <h2>LED Control</h2>
+  <p>Click the button to turn the LED on and off.</p>
+  <label class="switch">
+  <input type="checkbox" onchange="toggleLED(this)" id="togBtn">
+  <div class="slider round">
+  </div>
+  </label>
+  <script>
+  function toggleLED(element) {
+  var xhr = new XMLHttpRequest();
+  if(element.checked){ xhr.open("GET", "/LED=ON", true); }
+  else { xhr.open("GET", "/LED=OFF", true); }
+  xhr.send();
+  }
+  </script>
+  </body>
+  </html>
+  )html";
+  return ptr;
+}
+
 String SendHTML(){
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
