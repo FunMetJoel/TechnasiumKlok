@@ -52,7 +52,7 @@ void webinterface_loop(byte *currentPatternId) {
 }
 
 
-String SendHTML2(){
+String SendHTML(){
   String ptr = R"html(
   <!DOCTYPE html>
   <html>
@@ -60,49 +60,136 @@ String SendHTML2(){
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LED Control</title>
   <style>
-  html {
-  font-family: Arial;
-  display: inline-block;
-  margin: 0px auto;
-  text-align: center;
+  html { 
+    font-family: Helvetica; 
+    display: inline-block; 
+    margin: 0px auto; 
+    text-align: center;
   }
-  h2 { margin-top: 0; }
-  p { margin-top: 0; }
-  body { margin: 0; }
-  .switch { 
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 34px;
+  body{
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  } 
+  h1 {
+    color: #444444;
+    margin: 50px auto 30px;
+  } 
+  h3 {
+    color: #444444;
+    margin-bottom: 50px;
   }
-  .switch input { 
-    display: none;
+  p {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 10px;
+  }
+
+  select {
+    font-size: 16px;
+    padding: 5px;
+  }
+
+  input[type=number], input[type=range], input[type=color], input[type=checkbox], input[type=text] {
+    font-size: 16px;
+    margin: 5px;
+  }
+
+  #parameters {
+    margin: 10px;
+    background-color: #F0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    width: fit-content;
   }
   </style>
+  <script>
+    function setMode(mode) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/setMode?mode=' + mode, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var parameters = JSON.parse(xhr.responseText).params;
+          setParameters(parameters);
+        }
+      };
+      console.log(mode)
+      xhr.send();
+    };
+
+    function setParameter(name, value) {
+      console.log(name + ': ' + value);
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/setParameter?name=' + name + '&value=' + value, true);
+      xhr.send();
+      var mode = document.getElementById('patternSelect').value;
+      setMode(mode)
+    };
+
+    function setParameters(parameters) {
+      var parametersDiv = document.getElementById('parameters');
+      while (parametersDiv.firstChild) {
+        parametersDiv.removeChild(parametersDiv.firstChild);
+      }
+      for (var i = 0; i < parameters.length; i++) {
+        var parameter = parameters[i];
+        var label = document.createElement('label');
+        label.innerHTML = parameter[0] + ': ';
+        parametersDiv.appendChild(label);
+        if (parameter[1] == '1') {
+          var input = `<input type='number' step='0.01' value=` + parameter[2]+ ` onchange='setParameter("`+parameter[0]+`", this.value)'>`
+        } else if (parameter[1] == '2') {
+          var input = `<input type='range' min='0' max='255' value=` + parameter[2]+ ` onchange='setParameter("`+parameter[0]+`", this.value)'>`
+        } else if (parameter[1] == '3') {
+          var input = `<input type='color' value=` + parameter[2]+ ` onchange='setParameter("`+parameter[0]+`", this.value.replace("#", ""))'>`
+        } else if (parameter[1] == '4') {
+          var input = `<input type='range' min='0' max='1' value=` + parameter[2]+ ` onchange='setParameter("`+parameter[0]+`", this.value)'>`
+        } else if (parameter[1] == '5') {
+          var input = `<input type='checkbox' value=` + parameter[2]+ ` onchange='setParameter("`+parameter[0]+`", this.checked)'>`
+        } else {
+          var input = `<input type='text' value=` + parameter[2]+ ` onchange='setParameter("`+parameter[0]+`", this.value)'>`
+        }
+        parametersDiv.innerHTML += input;
+        parametersDiv.appendChild(document.createElement('br'));
+      };
+    };
+
+    function getMode() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/getMode', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var mode = JSON.parse(xhr.responseText).mode;
+          document.getElementById('patternSelect').value = mode;
+          setMode(mode);
+        }
+      };
+      xhr.send();
+    };
+
+    getMode();
+  </script>
   </head>
   <body>
   <h2>LED Control</h2>
-  <p>Click the button to turn the LED on and off.</p>
-  <label class="switch">
-  <input type="checkbox" onchange="toggleLED(this)" id="togBtn">
-  <div class="slider round">
-  </div>
-  </label>
-  <script>
-  function toggleLED(element) {
-  var xhr = new XMLHttpRequest();
-  if(element.checked){ xhr.open("GET", "/LED=ON", true); }
-  else { xhr.open("GET", "/LED=OFF", true); }
-  xhr.send();
+  <p>Select a pattern:</p>
+  <select id="patternSelect" onchange="setMode(this.value)">)html";
+  for (int i = 0; i < 4; i++) {
+    ptr += "<option value=\"" + String(i) + "\">" + patternsPtr[i]->displayName + "</option>";
   }
-  </script>
+  ptr += R"html(
+  </select>
+  <div id="parameters">
+  </div>
   </body>
   </html>
   )html";
   return ptr;
 }
 
-String SendHTML(){
+String SendHTMLold(){
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
   ptr +="<title>LED Control</title>\n";

@@ -88,4 +88,23 @@ public:
     void setParameter(String name, String value) override;
 };
 
+class SnakePattern : public Pattern {
+    byte redH, greenH, blueH;
+    byte redT, greenT, blueT;
+    byte redB, greenB, blueB;
+    float speed = 1.0f;
+    float phaseShift = 0.0f;
+    byte TailLength = 5;
+
+public:
+    explicit SnakePattern(int count) : Pattern("Snake", count) {}
+
+    ~SnakePattern() override = default;
+
+    byte** generate(float t) override;
+
+    String** getParameters() override;
+    void setParameter(String name, String value) override;
+};
+
 #endif // PATTERNS_H

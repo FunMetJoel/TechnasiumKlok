@@ -183,3 +183,76 @@ void LoadingPattern::setParameter(String name, String value) {
     phaseShift = fmod(millis(), 1.0f/speed);
   }
 }
+
+byte** SnakePattern::generate(float t) {
+  const int cols = 3;
+  byte** pattern = create2DArray(ledCount, cols);
+
+  float reducedT = fmod((t + phaseShift) * speed, 1.0f);
+  float frondLedT = fmod(reducedT * ledCount, 1.0f);
+
+  byte currentFrontled = static_cast<byte>(floor(reducedT * ledCount));
+
+  for (int i = 0; i < ledCount; ++i) {
+    if (i == currentFrontled) {
+      pattern[i][0] = round(lerp(redB, redH, frondLedT));
+      pattern[i][1] = round(lerp(greenB, greenH, frondLedT));
+      pattern[i][2] = round(lerp(blueB, blueH, frondLedT));
+    } else if (i == (currentFrontled-1) % ledCount) {
+      pattern[i][0] = round(lerp(redH, redT, frondLedT));
+      pattern[i][1] = round(lerp(greenH, greenT, frondLedT));
+      pattern[i][2] = round(lerp(blueH, blueT, frondLedT));
+    } else if ((currentFrontled - i)%24 < TailLength && (currentFrontled - i)%24 > 0) {
+      float fadeAmount = max(0.0f, 1.0f - ((currentFrontled - i)%24) * (1.0f/TailLength));
+      pattern[i][0] = round(lerp(redT, redB, fadeAmount));
+      pattern[i][1] = round(lerp(greenT, greenB, fadeAmount));
+      pattern[i][2] = round(lerp(blueT, blueB, fadeAmount));
+    } else {
+      pattern[i][0] = redB;
+      pattern[i][1] = greenB;
+      pattern[i][2] = blueB;
+    }
+  }
+
+  return pattern;
+}
+
+String** SnakePattern::getParameters() {
+  numParameters = 7;
+  String** parameters = new String*[numParameters];
+  parameters[0] = new String[3]{ "speed", String(parameterType::FLOAT), String(speed) };
+  parameters[1] = new String[3]{ "phaseShift", String(parameterType::FLOAT), String(phaseShift) };
+  parameters[2] = new String[3]{ "HeadColor", String(parameterType::COLOR), "#" + intToHex(redH) + intToHex(greenH) + intToHex(blueH) };
+  parameters[3] = new String[3]{ "TailColor", String(parameterType::COLOR), "#" + intToHex(redT) + intToHex(greenT) + intToHex(blueT) };
+  parameters[4] = new String[3]{ "TailLength", String(parameterType::INT), String(TailLength) };
+  parameters[5] = new String[3]{ "BackgroundColor", String(parameterType::COLOR), "#" + intToHex(redB) + intToHex(greenB) + intToHex(blueB) };
+  parameters[6] = new String[3]{ "Timer", String(parameterType::FLOAT), String(1.0f / speed) };
+
+  return parameters;
+}
+
+void SnakePattern::setParameter(String name, String value) {
+  if (name == "speed") {
+    speed = value.toFloat();
+  } else if (name == "phaseShift") {
+    phaseShift = value.toFloat();
+  } else if (name == "HeadColor") {
+    redH = (int)strtol(value.substring(0, 2).c_str(), NULL, 16);
+    greenH = (int)strtol(value.substring(2, 4).c_str(), NULL, 16);
+    blueH = (int)strtol(value.substring(4, 6).c_str(), NULL, 16);
+  } else if (name == "TailColor") {
+    redT = (int)strtol(value.substring(0, 2).c_str(), NULL, 16);
+    greenT = (int)strtol(value.substring(2, 4).c_str(), NULL, 16);
+    blueT = (int)strtol(value.substring(4, 6).c_str(), NULL, 16);
+  } else if (name == "BackgroundColor") {
+    redB = (int)strtol(value.substring(0, 2).c_str(), NULL, 16);
+    greenB = (int)strtol(value.substring(2, 4).c_str(), NULL, 16);
+    blueB = (int)strtol(value.substring(4, 6).c_str(), NULL, 16);
+  } else if (name == "Timer") {
+    float timerLength = value.toFloat();
+    speed = 1.0f / timerLength;
+    phaseShift = fmod(millis(), 1.0f/speed);
+  } else if (name == "TailLength") {
+    TailLength = value.toInt();
+  }
+}

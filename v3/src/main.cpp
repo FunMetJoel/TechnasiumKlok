@@ -34,10 +34,11 @@ byte colors[24][3] = {
 float brightness = 0.1;
 
 byte currentPatternId = 0;
-Pattern* patterns[3] = {
+Pattern* patterns[4] = {
   new RainbowPattern(24),
   new SolidPattern(24, 255, 0, 0),
-  new LoadingPattern(24)
+  new LoadingPattern(24),
+  new SnakePattern(24)
 };
 
 void setup() {
